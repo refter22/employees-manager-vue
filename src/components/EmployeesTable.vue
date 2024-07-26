@@ -22,6 +22,10 @@
               class="action-button subordinates-button" title="Перейти к подчинённым">
               <EmployeesIcon class="employees-icon" />
             </button>
+            <button @click="openAddModal(employee.id)" class="action-button add-subordinate-button"
+              title="Добавить подчиненного">
+              <PlusIcon class="plus-icon" />
+            </button>
             <button @click="openDeleteModal(employee)" class="action-button delete-button" title="Удалить сотрудника">
               <DeleteIcon />
             </button>
@@ -36,6 +40,7 @@
 import { formatPhoneNumber } from '@/utils/phoneFormatter'
 import EmployeesIcon from '@/components/icons/EmployeesIcon.vue'
 import DeleteIcon from './icons/DeleteIcon.vue'
+import PlusIcon from './icons/PlusIcon.vue'
 import { modalActions } from '@/store/modules/modal/modal.actions'
 import EmployeesAddModal from './EmployeesAddModal.vue'
 import EmployeesDeleteModal from './EmployeesDeleteModal.vue'
@@ -44,7 +49,8 @@ export default {
   name: 'EmployeesTable',
   components: {
     EmployeesIcon,
-    DeleteIcon
+    DeleteIcon,
+    PlusIcon
   },
   props: {
     displayedEmployees: {
@@ -66,19 +72,19 @@ export default {
   },
   methods: {
     formatPhoneNumber,
-    openAddModal () {
+    openAddModal(managerId = null) {
       modalActions.showModal({
         component: EmployeesAddModal,
-        props: { defaultManagerId: this.currentManagerId }
+        props: { defaultManagerId: managerId || this.currentManagerId }
       })
     },
-    openDeleteModal (employee) {
+    openDeleteModal(employee) {
       modalActions.showModal({ component: EmployeesDeleteModal, props: { employee } })
     },
-    hasSubordinates (employee) {
+    hasSubordinates(employee) {
       return this.allEmployees.some(e => e.managerId === employee.id)
     },
-    goToSubordinates (employee) {
+    goToSubordinates(employee) {
       this.$router.push(`/employees/${employee.id}`)
     }
   }
@@ -223,5 +229,18 @@ export default {
 
 .employees-icon {
   flex-shrink: 0;
+}
+
+.add-subordinate-button {
+  background-color: var(--secondary-color);
+}
+
+.add-subordinate-button:hover {
+  background-color: var(--primary-color);
+}
+
+.plus-icon {
+  width: 24px;
+  height: 24px;
 }
 </style>
