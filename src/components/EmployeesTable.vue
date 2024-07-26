@@ -192,25 +192,10 @@ export default {
   background-color: var(--primary-color);
 }
 
-.delete-button {
-  background-color: transparent;
-  color: var(--danger-color);
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--spacing-small);
-}
-
-.delete-button:hover {
-  color: var(--danger-color-dark);
-}
-
-.subordinates-button {
+.action-button {
   display: flex;
   align-items: center;
   gap: var(--spacing-small);
-  background-color: var(--secondary-color);
   color: white;
   border: none;
   padding: var(--spacing-small);
@@ -220,19 +205,23 @@ export default {
   transition: var(--transition);
 }
 
+.delete-button {
+  background-color: var(--danger-color);
+}
+
+.delete-button:hover {
+  background-color: var(--danger-color-dark);
+}
+
+.subordinates-button {
+  background-color: var(--secondary-color);
+}
+
 .subordinates-button:hover {
   background-color: var(--primary-color);
 }
 
 .employees-icon {
   flex-shrink: 0;
-}
-
-.delete-button {
-  color: var(--danger-color);
-}
-
-.delete-button:hover {
-  color: var(--danger-color-dark);
 }
 </style>
