@@ -58,12 +58,19 @@ export default {
     tableTitle: {
       type: String,
       default: 'Сотрудники верхнего уровня'
+    },
+    currentManagerId: {
+      type: Number,
+      default: null
     }
   },
   methods: {
     formatPhoneNumber,
     openAddModal () {
-      modalActions.showModal({ component: EmployeesAddModal })
+      modalActions.showModal({
+        component: EmployeesAddModal,
+        props: { defaultManagerId: this.currentManagerId }
+      })
     },
     openDeleteModal (employee) {
       modalActions.showModal({ component: EmployeesDeleteModal, props: { employee } })

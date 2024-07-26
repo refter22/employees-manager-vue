@@ -1,7 +1,8 @@
 <template>
   <div>
     <div v-if="employee">
-      <employee-table :displayed-employees="subordinates" :all-employees="employees" :table-title="tableTitle" />
+      <employee-table :displayed-employees="subordinates" :all-employees="employees" :table-title="tableTitle"
+        :current-manager-id="parseInt(employeeId)" />
     </div>
     <p v-else>Сотрудник не найден</p>
     <button @click="goBack" class="back-button">⇐ К сотрудникам верхнего уровня</button>

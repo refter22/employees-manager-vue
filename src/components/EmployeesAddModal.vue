@@ -35,12 +35,18 @@ import { formatPhoneNumber, cleanPhoneNumber } from '@/utils/phoneFormatter'
 
 export default {
   name: 'EmployeesAddModal',
+  props: {
+    defaultManagerId: {
+      type: Number,
+      default: null
+    }
+  },
   data () {
     return {
       name: '',
       phone: '',
       formattedPhone: '',
-      managerId: null,
+      managerId: this.defaultManagerId,
       nameError: '',
       phoneError: ''
     }
