@@ -2,7 +2,7 @@
   <div class="employee-table">
     <div class="table-header-actions">
       <h2 v-if="tableTitle" class="table-title">{{ tableTitle }}</h2>
-      <button @click="openAddModal" class="add-button">
+      <button @click="openAddModal(currentManagerId)" class="add-button">
         <EmployeesIcon class="employees-icon" />
         Добавить сотрудника
       </button>
@@ -72,19 +72,19 @@ export default {
   },
   methods: {
     formatPhoneNumber,
-    openAddModal(managerId = null) {
+    openAddModal (managerId) {
       modalActions.showModal({
         component: EmployeesAddModal,
-        props: { defaultManagerId: managerId || this.currentManagerId }
+        props: { defaultManagerId: managerId }
       })
     },
-    openDeleteModal(employee) {
+    openDeleteModal (employee) {
       modalActions.showModal({ component: EmployeesDeleteModal, props: { employee } })
     },
-    hasSubordinates(employee) {
+    hasSubordinates (employee) {
       return this.allEmployees.some(e => e.managerId === employee.id)
     },
-    goToSubordinates(employee) {
+    goToSubordinates (employee) {
       this.$router.push(`/employees/${employee.id}`)
     }
   }

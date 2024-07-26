@@ -1,6 +1,6 @@
 <template>
   <div>
-    <employee-table :displayed-employees="topLevelEmployees" :all-employees="employees" />
+    <employee-table :displayed-employees="topLevelEmployees" :all-employees="employees" current-manager-id="null" />
     <modal />
   </div>
 </template>
