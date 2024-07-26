@@ -1,4 +1,4 @@
-import { createActionCreators } from '../../vuex.helpers.js'
+import { createActionCreators } from '../../vuex.helpers'
 
 export const modalActions = createActionCreators('modal', {
   showModal: null,

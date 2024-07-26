@@ -1,25 +1,15 @@
 <template>
   <div id="app">
     <h1 class="page-title">Список сотрудников</h1>
-    <employee-table :employees="employees" />
-    <modal />
+    <div class="content-wrapper">
+      <router-view></router-view>
+    </div>
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex'
-import EmployeeTable from './components/EmployeesTable.vue'
-import Modal from './components/Modal.vue'
-
 export default {
-  name: 'App',
-  components: {
-    EmployeeTable,
-    Modal
-  },
-  computed: {
-    ...mapState('employees', ['employees'])
-  }
+  name: 'App'
 }
 </script>
 
@@ -34,15 +24,30 @@ export default {
   color: var(--text-color);
   background-color: var(--background-color);
   min-height: 100vh;
-  padding: var(--spacing-large);
+  display: flex;
+  flex-direction: column;
+}
+
+.content-wrapper {
+  padding: var(--spacing-large) 0;
+  width: 100%;
 }
 
 .page-title {
   color: var(--primary-color);
-  margin-bottom: var(--spacing-large);
-  font-size: var(--font-size-large);
-  font-weight: bold;
+  font-size: 2.5rem;
+  font-weight: 700;
   text-align: center;
-  padding: var(--spacing-medium);
+  padding: var(--spacing-large) 0;
+  background-color: white;
+  box-shadow: var(--box-shadow);
+  margin-bottom: var(--spacing-large);
+}
+
+.content-wrapper {
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  padding: 0 var(--spacing-large);
+  flex-grow: 1;
 }
 </style>

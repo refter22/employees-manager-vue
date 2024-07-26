@@ -12,6 +12,15 @@
         <input id="phone" v-model="formattedPhone" required class="form-input" @input="formatPhone">
         <span v-if="phoneError" class="error-message">{{ phoneError }}</span>
       </div>
+      <div class="form-group">
+        <label for="manager">Начальник:</label>
+        <select id="manager" v-model="managerId" class="form-input">
+          <option :value="null">Нет начальника</option>
+          <option v-for="employee in availableManagers" :key="employee.id" :value="employee.id">
+            {{ employee.name }}
+          </option>
+        </select>
+      </div>
       <div class="button-group">
         <button type="submit" class="btn btn-primary" :disabled="!isFormValid">Добавить</button>
         <button type="button" @click="$emit('close')" class="btn btn-secondary">Отмена</button>
@@ -21,6 +30,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import { formatPhoneNumber, cleanPhoneNumber } from '@/utils/phoneFormatter'
 
 export default {
@@ -30,11 +40,16 @@ export default {
       name: '',
       phone: '',
       formattedPhone: '',
+      managerId: null,
       nameError: '',
       phoneError: ''
     }
   },
   computed: {
+    ...mapState('employees', ['employees']),
+    availableManagers () {
+      return this.employees.filter(emp => emp.id !== this.id)
+    },
     isFormValid () {
       return this.name && this.phone && !this.nameError && !this.phoneError
     }
@@ -44,7 +59,8 @@ export default {
       if (this.isFormValid) {
         this.$store.dispatch('employees/addEmployee', {
           name: this.name,
-          phone: this.phone
+          phone: this.phone,
+          managerId: this.managerId
         })
         this.$emit('close')
       }
@@ -80,8 +96,9 @@ export default {
 
 <style scoped>
 .modal-title {
-  margin-bottom: var(--spacing-medium);
   color: var(--primary-color);
+  font-size: var(--font-size-large);
+  margin-bottom: var(--spacing-medium);
 }
 
 .modal-form {
@@ -120,6 +137,7 @@ export default {
   border-radius: var(--border-radius);
   cursor: pointer;
   font-size: var(--font-size-medium);
+  transition: var(--transition);
 }
 
 .btn-primary {

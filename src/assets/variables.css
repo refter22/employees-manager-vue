@@ -14,4 +14,8 @@
   --font-size-medium: 16px;
   --font-size-large: 18px;
   --danger-color-dark: #c0392b;
+  --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --transition: all 0.3s ease;
+  --header-height: 60px;
+  --content-max-width: 1200px;
 }

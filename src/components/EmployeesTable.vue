@@ -1,21 +1,31 @@
 <template>
   <div class="employee-table">
-    <button @click="openAddModal" class="add-button">
-      <add-icon />
-    </button>
+    <div class="table-header-actions">
+      <h2 v-if="tableTitle" class="table-title">{{ tableTitle }}</h2>
+      <button @click="openAddModal" class="add-button">
+        <EmployeesIcon class="employees-icon" />
+        Добавить сотрудника
+      </button>
+    </div>
     <div class="table">
       <div class="table-header">
         <div class="header-cell name-column">Имя</div>
         <div class="header-cell phone-column">Номер телефона</div>
         <div class="header-cell actions-column">Действия</div>
       </div>
-      <div v-for="employee in employees" :key="employee.id" class="table-row">
+      <div v-for="employee in displayedEmployees" :key="employee.id" class="table-row">
         <div class="cell name-column">{{ employee.name }}</div>
         <div class="cell phone-column">{{ formatPhoneNumber(employee.phone) }}</div>
         <div class="cell actions-column">
-          <button @click="openDeleteModal(employee)" class="delete-button">
-            <delete-icon />
-          </button>
+          <div class="actions-wrapper">
+            <button v-if="hasSubordinates(employee)" @click="goToSubordinates(employee)"
+              class="action-button subordinates-button" title="Перейти к подчинённым">
+              <EmployeesIcon class="employees-icon" />
+            </button>
+            <button @click="openDeleteModal(employee)" class="action-button delete-button" title="Удалить сотрудника">
+              <DeleteIcon />
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -23,51 +33,52 @@
 </template>
 
 <script>
+import { formatPhoneNumber } from '@/utils/phoneFormatter'
+import EmployeesIcon from '@/components/icons/EmployeesIcon.vue'
+import DeleteIcon from './icons/DeleteIcon.vue'
+import { modalActions } from '@/store/modules/modal/modal.actions'
 import EmployeesAddModal from './EmployeesAddModal.vue'
 import EmployeesDeleteModal from './EmployeesDeleteModal.vue'
-import { formatPhoneNumber } from '@/utils/phoneFormatter'
-import AddIcon from './icons/AddIcon.vue'
-import DeleteIcon from './icons/DeleteIcon.vue'
 
 export default {
-  name: 'EmployeeTable',
+  name: 'EmployeesTable',
   components: {
-    AddIcon,
+    EmployeesIcon,
     DeleteIcon
   },
   props: {
-    employees: {
+    displayedEmployees: {
       type: Array,
       required: true
+    },
+    allEmployees: {
+      type: Array,
+      required: true
+    },
+    tableTitle: {
+      type: String,
+      default: 'Сотрудники верхнего уровня'
     }
   },
   methods: {
-    openAddModal() {
-      this.$store.dispatch('modal/showModal', {
-        component: EmployeesAddModal
-      })
+    formatPhoneNumber,
+    openAddModal () {
+      modalActions.showModal({ component: EmployeesAddModal })
     },
-
-    openDeleteModal(employee) {
-      this.$store.dispatch('modal/showModal', {
-        component: EmployeesDeleteModal,
-        props: { employee }
-      })
+    openDeleteModal (employee) {
+      modalActions.showModal({ component: EmployeesDeleteModal, props: { employee } })
     },
-    formatPhoneNumber
+    hasSubordinates (employee) {
+      return this.allEmployees.some(e => e.managerId === employee.id)
+    },
+    goToSubordinates (employee) {
+      this.$router.push(`/employees/${employee.id}`)
+    }
   }
 }
 </script>
 
 <style scoped>
-.employee-table {
-  width: 100%;
-  background-color: white;
-  border-radius: var(--border-radius);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: var(--spacing-medium);
-}
-
 .table {
   width: 100%;
   border-collapse: separate;
@@ -76,6 +87,25 @@ export default {
   border-radius: var(--border-radius);
   margin-top: var(--spacing-medium);
   overflow: hidden;
+  background-color: white;
+  box-shadow: var(--box-shadow);
+}
+
+.table-header-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-medium);
+}
+
+.table-title {
+  font-size: var(--font-size-large);
+  color: var(--primary-color);
+  margin: 0;
+  text-align: left;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .table-header,
@@ -112,6 +142,13 @@ export default {
   flex: 1;
   min-width: 150px;
   border-right: 1px solid var(--border-color);
+  justify-content: center;
+}
+
+.manager-column {
+  flex: 1;
+  min-width: 150px;
+  border-right: 1px solid var(--border-color);
 }
 
 .actions-column {
@@ -120,11 +157,19 @@ export default {
   justify-content: center;
 }
 
-.table-row:last-child .cell {
-  border-bottom: none;
+.cell.actions-column {
+  justify-content: flex-end;
+}
+
+.actions-wrapper {
+  display: flex;
+  gap: var(--spacing-small);
 }
 
 .add-button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-small);
   background-color: var(--secondary-color);
   color: white;
   border: none;
@@ -133,10 +178,11 @@ export default {
   cursor: pointer;
   font-size: var(--font-size-medium);
   margin-bottom: var(--spacing-medium);
+  transition: var(--transition);
 }
 
 .add-button:hover {
-  opacity: 0.9;
+  background-color: var(--primary-color);
 }
 
 .delete-button {
@@ -147,6 +193,36 @@ export default {
   align-items: center;
   justify-content: center;
   gap: var(--spacing-small);
+}
+
+.delete-button:hover {
+  color: var(--danger-color-dark);
+}
+
+.subordinates-button {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-small);
+  background-color: var(--secondary-color);
+  color: white;
+  border: none;
+  padding: var(--spacing-small);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  margin-right: var(--spacing-small);
+  transition: var(--transition);
+}
+
+.subordinates-button:hover {
+  background-color: var(--primary-color);
+}
+
+.employees-icon {
+  flex-shrink: 0;
+}
+
+.delete-button {
+  color: var(--danger-color);
 }
 
 .delete-button:hover {

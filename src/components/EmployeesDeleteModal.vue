@@ -1,7 +1,13 @@
 <template>
   <div class="modal-content">
     <h2 class="modal-title">Удалить сотрудника</h2>
-    <p class="modal-message">Вы уверены, что хотите удалить сотрудника {{ employee.name }}?</p>
+    <p class="modal-message">
+      {{ deleteMessage }}
+    </p>
+    <div v-if="hasSubordinates" class="checkbox-group">
+      <input type="checkbox" id="deleteSubordinates" v-model="deleteWithSubordinates">
+      <label for="deleteSubordinates">Удалить вместе с подчиненными</label>
+    </div>
     <div class="button-group">
       <button @click="confirmDelete" class="btn btn-danger">Удалить</button>
       <button @click="$emit('close')" class="btn btn-secondary">Отмена</button>
@@ -10,6 +16,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import { employeesActions } from '@/store/modules/employees/employees.actions'
 
 export default {
@@ -20,9 +27,29 @@ export default {
       required: true
     }
   },
+  data () {
+    return {
+      deleteWithSubordinates: false
+    }
+  },
+  computed: {
+    ...mapState('employees', ['employees']),
+    hasSubordinates () {
+      return this.employees.some(emp => emp.managerId === this.employee.id)
+    },
+    deleteMessage () {
+      if (this.hasSubordinates) {
+        return `Сотрудник ${this.employee.name} имеет подчиненных. Выберите действие для удаления.`
+      }
+      return `Вы уверены, что хотите удалить сотрудника ${this.employee.name}?`
+    }
+  },
   methods: {
     confirmDelete () {
-      employeesActions.removeEmployee(this.employee.id)
+      employeesActions.removeEmployee({
+        employeeId: this.employee.id,
+        deleteWithSubordinates: this.deleteWithSubordinates
+      })
       this.$emit('close')
     }
   }
@@ -31,8 +58,9 @@ export default {
 
 <style scoped>
 .modal-title {
-  margin-bottom: var(--spacing-medium);
   color: var(--primary-color);
+  font-size: var(--font-size-large);
+  margin-bottom: var(--spacing-medium);
 }
 
 .modal-message {
@@ -52,6 +80,7 @@ export default {
   border-radius: var(--border-radius);
   cursor: pointer;
   font-size: var(--font-size-medium);
+  transition: var(--transition);
 }
 
 .btn-danger {
@@ -66,5 +95,20 @@ export default {
 
 .btn:hover {
   opacity: 0.9;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.checkbox-group {
+  margin-bottom: var(--spacing-medium);
+  display: flex;
+  align-items: center;
+}
+
+.checkbox-group input[type="checkbox"] {
+  margin-right: var(--spacing-small);
 }
 </style>
